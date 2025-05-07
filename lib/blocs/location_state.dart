@@ -15,3 +15,12 @@ class LocationUpdate extends LocationState {
   @override
   List<Object?> get props => [location];
 }
+
+class LocationSupposeToUpdate extends LocationState {
+  final LocationModel location;
+
+  LocationSupposeToUpdate(this.location);
+
+  @override
+  List<Object?> get props => [location];
+}

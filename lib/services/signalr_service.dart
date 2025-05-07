@@ -1,12 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:signalr_core/signalr_core.dart';
 
 class SignalRService {
   late HubConnection connection;
 
   Future<void> initConnection() async {
-    connection = HubConnectionBuilder()
-        .withUrl('https://raintor-api.devdata.top/hub')
-        .build();
+    connection = HubConnectionBuilder().withUrl('https://raintor-api.devdata.top/hub').build();
 
     await connection.start();
   }
@@ -17,8 +16,22 @@ class SignalRService {
 
   void onReceiveLatLon(Function(double, double) callback) {
     connection.on('ReceiveLatLon', (message) {
-      final lat = message?[0] as double;
-      final lon = message?[1] as double;
+      double lat = 0.0;
+      double lon = 0.0;
+      if (message is List && message.isNotEmpty) {
+        final firstItem = message.first;
+
+        if (firstItem is Map && firstItem.containsKey('lat') && firstItem.containsKey('lon')) {
+          lat = firstItem['lat'] as double;
+          lon = firstItem['lon'] as double;
+        } else {
+          debugPrint('Unexpected list item format: $firstItem');
+          return;
+        }
+      } else {
+        debugPrint('Unexpected message format: $message');
+        return;
+      }
       callback(lat, lon);
     });
   }
